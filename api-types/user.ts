@@ -62,6 +62,11 @@ export type User = {
    * Rappresenta la classe a cui uno studente appartiene. E' valorizzato solo per i "role" student
    */
   student_class?: string;
+
+  /**
+   * Token di autenticazione creato al momento del login/registrazione e utilizzato durante le chiamate 
+   */
+  token?:string;
 };
 
 export type Role = "admin" | "teacher" | "student";

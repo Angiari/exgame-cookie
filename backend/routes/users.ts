@@ -4,6 +4,7 @@ import {
   add,
   edit,
   getUsersByRole,
+  getUsersWithoutClass,
   index,
   remove,
   view,
@@ -15,16 +16,19 @@ const router = new Router({
 
 // All routes
 router.get("/", async (ctx) => {
+  //Check if logged user == admin
   const all = await index();
   ctx.response.body = all;
 });
 
 router.get("/role/:role", async (ctx) => {
+  //Check if logged user == admin 
   ctx.body = await getUsersByRole(ctx.params.role as Role);
 });
 
 // Find a user
 router.get("/:id", async (ctx) => {
+  //Check if logged user == admin
   const user = await view(ctx.params.id);
 
   if (!user) {
@@ -45,6 +49,7 @@ router.post("/", async (ctx) => {
 
 // Edit a user
 router.put("/:id", async (ctx) => {
+  //Check if logged user == admin, admin cant edit _id, token and other data admin
   ctx.accepts("json");
   const response = await edit(ctx.params.id, ctx.request.body as User);
   ctx.response.body = response;
@@ -52,7 +57,14 @@ router.put("/:id", async (ctx) => {
 
 // Delete a user
 router.delete("/:id", async (ctx) => {
+  //Check if logged user == admin, admin cant delete others admin 
   ctx.body = await remove(ctx.params.id);
+});
+
+// Find all studens without a class
+router.get("/students-without-class" , async(ctx) =>{
+  //Check if logged user == admin
+  ctx.body = await getUsersWithoutClass();
 });
 
 export default router;
