@@ -23,7 +23,6 @@ const UserModel = DB.model("user", userSchema);
 
 export const index = async () => {
   return UserModel.find({});
-  console.log("ciao")
 };
 
 export const getUsersByRole = async (role: Role) => {
