@@ -1,4 +1,3 @@
-import { isNull } from "util";
 import { Role, User, User as UserModel } from "../../api-types";
 import DB from "./db";
 
@@ -6,8 +5,6 @@ import DB from "./db";
 
 const userSchema = new DB.Schema({
   firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
@@ -24,6 +21,21 @@ const UserModel = DB.model("user", userSchema);
 export const index = async () => {
   return UserModel.find({});
 };
+
+function mockAuth(){
+  return {
+      "_id": "1231241241242342sfdfsd1213",
+      "first_name": "Alessandro",
+      "last_name": "Falezza",
+      "email": "mail@gmail.com",
+      "password": "*******",
+      "role": "teacher",
+      "created_at": "1729766635269",
+      "updated_at": "1729767105639",
+      "classes": ["suse", "cookie"],
+  } as User
+}
+
 
 export const getUsersByRole = async (role: Role) => {
   return UserModel.find({ role });
