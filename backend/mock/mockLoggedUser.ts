@@ -7,7 +7,7 @@ export const getmockLoggedUser = (): User => {
     last_name: "Falezza",
     email: "email@gmail.com",
     password: "hashedPasswoord",
-    role: "teacher",
+    role: "admin",
     created_at: "1729766635269",
     updated_at: "1729767105639",
     classes: ["suse", "cookie"],

@@ -36,13 +36,7 @@ export const viewForAdmin = async (id: string) => {
   return UserModel.findById(id);
 };
 
-export const viewForTeacher = async (id: string, role: Role) => {
-  return UserModel.findById(id).where(role);
-};
 
-export const viewForStudent = async (id: string) => {
-  return UserModel.findById(id);
-};
 
 export const add = async (user: User) => {
   const UserData = new UserModel(user);
@@ -61,5 +55,23 @@ export const edit = async (id, user: User) => {
 };
 
 export const remove = async (id: string) => {
-  return UserModel.deleteOne({ _id: id });
+  
+  try {
+    const userToDelete = await UserModel.findById(id);
+
+    if (!userToDelete) {
+      return { success: false, message: "Utente non trovato" };
+    }
+
+    if (userToDelete.role === "admin") {
+      return { success: false, message: "Non puoi eliminare un altro admin" };
+    }
+
+    const result = await UserModel.deleteOne({ _id: id });
+    return { success: true, message: "Utente eliminato correttamente", result };
+    
+  } catch (error) {
+    console.error("Errore durante l'eliminazione dell'utente:", error);
+    return { success: false, message: "Errore durante l'eliminazione dell'utente" };
+  }
 };

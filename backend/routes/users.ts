@@ -1,6 +1,6 @@
 import Router from "@koa/router";
 import { Role, User } from "../../api-types";
-import { isAdmin, getmockLoggedUser } from "../mock/mockLoggedUser";
+import { isAdmin,getmockLoggedUser } from "../mock/mockLoggedUser";
 
 import {
   add,
@@ -10,13 +10,12 @@ import {
   index,
   remove,
   viewForAdmin,
-  viewForTeacher,
-  viewForStudent,
 } from "../services/user";
 
 const router = new Router({
   prefix: "/users",
 });
+
 
 const isAdminMiddleware = async (ctx, next) => {
   const is_admin = isAdmin();
@@ -36,24 +35,23 @@ router.get("/",isAdminMiddleware ,async (ctx) => {
 
 router.get("/role/:role",isAdminMiddleware, async (ctx) => {
   //Check if logged user == admin 
-  ctx.body = await getUsersByRole(ctx.params.role as Role);
+  ctx.response.body = await getUsersByRole(ctx.params.role as Role);
 });
 
 // Find a user
 router.get("/:id", async (ctx) => {
   const loggedUser = getmockLoggedUser()
-  console.log(loggedUser.role)
   let user;
   switch(loggedUser.role){
     case "admin":
        user = await viewForAdmin(ctx.params.id);
       break
-    case "teacher":
+/*       case "teacher":
       user = await viewForTeacher(ctx.params.id);
       break
     case "student":
       user = await viewForStudent(ctx.params.id);
-      break
+      break  */
   }
   if (!user) {
     // User not found
@@ -82,7 +80,6 @@ router.put("/:id", async (ctx) => {
 
 // Delete a user
 router.delete("/:id",isAdminMiddleware, async (ctx) => {
-  //Check if logged user == admin, admin cant delete others admin 
   ctx.body = await remove(ctx.params.id);
 });
 
