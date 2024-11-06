@@ -1,4 +1,5 @@
 import { Role, User, User as UserModel } from "../../api-types";
+import { getmockLoggedUser } from "../mock/mockLoggedUser";
 import DB from "./db";
 
 // const DB: User[] = [];
@@ -22,21 +23,6 @@ export const index = async () => {
   return UserModel.find({});
 };
 
-function mockAuth(){
-  return {
-      "_id": "1231241241242342sfdfsd1213",
-      "first_name": "Alessandro",
-      "last_name": "Falezza",
-      "email": "mail@gmail.com",
-      "password": "*******",
-      "role": "teacher",
-      "created_at": "1729766635269",
-      "updated_at": "1729767105639",
-      "classes": ["suse", "cookie"],
-  } as User
-}
-
-
 export const getUsersByRole = async (role: Role) => {
   return UserModel.find({ role });
 };
@@ -45,7 +31,16 @@ export const getUsersWithoutClass = async() => {
   return UserModel.find({ role: "student", student_class: {$exists: false} });  
 }
 
-export const view = async (id: string) => {
+//---------------VIEW BY ID------------------------
+export const viewForAdmin = async (id: string) => {
+  return UserModel.findById(id);
+};
+
+export const viewForTeacher = async (id: string, role: Role) => {
+  return UserModel.findById(id).where(role);
+};
+
+export const viewForStudent = async (id: string) => {
   return UserModel.findById(id);
 };
 

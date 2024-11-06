@@ -1,5 +1,7 @@
 import Router from "@koa/router";
 import { Role, User } from "../../api-types";
+import { isAdmin, getmockLoggedUser } from "../mock/mockLoggedUser";
+
 import {
   add,
   edit,
@@ -7,30 +9,52 @@ import {
   getUsersWithoutClass,
   index,
   remove,
-  view,
+  viewForAdmin,
+  viewForTeacher,
+  viewForStudent,
 } from "../services/user";
 
 const router = new Router({
   prefix: "/users",
 });
 
+const isAdminMiddleware = async (ctx, next) => {
+  const is_admin = isAdmin();
+  if (is_admin) {
+    await next();
+  } else {
+    ctx.status = 401;
+    ctx.response.body = "user non autorizzato";
+  }
+};
+
 // All routes
-router.get("/", async (ctx) => {
-  //Check if logged user == admin
+router.get("/",isAdminMiddleware ,async (ctx) => {
   const all = await index();
   ctx.response.body = all;
 });
 
-router.get("/role/:role", async (ctx) => {
+router.get("/role/:role",isAdminMiddleware, async (ctx) => {
   //Check if logged user == admin 
   ctx.body = await getUsersByRole(ctx.params.role as Role);
 });
 
 // Find a user
 router.get("/:id", async (ctx) => {
-  //Check if logged user == admin
-  const user = await view(ctx.params.id);
-
+  const loggedUser = getmockLoggedUser()
+  console.log(loggedUser.role)
+  let user;
+  switch(loggedUser.role){
+    case "admin":
+       user = await viewForAdmin(ctx.params.id);
+      break
+    case "teacher":
+      user = await viewForTeacher(ctx.params.id);
+      break
+    case "student":
+      user = await viewForStudent(ctx.params.id);
+      break
+  }
   if (!user) {
     // User not found
     ctx.status = 404;
@@ -41,6 +65,7 @@ router.get("/:id", async (ctx) => {
 });
 
 // Add a user
+//Lo fa l'altro gruppo
 router.post("/", async (ctx) => {
   ctx.accepts("json");
   const user = await add(ctx.request.body as User);
@@ -56,7 +81,7 @@ router.put("/:id", async (ctx) => {
 });
 
 // Delete a user
-router.delete("/:id", async (ctx) => {
+router.delete("/:id",isAdminMiddleware, async (ctx) => {
   //Check if logged user == admin, admin cant delete others admin 
   ctx.body = await remove(ctx.params.id);
 });
